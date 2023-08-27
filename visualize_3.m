@@ -87,7 +87,6 @@ plot(dT,KW_raw,'DisplayName','measured Power [kW]'); hold on;
 set(0, 'defaulttextInterpreter', 'none')
 stairs(dt_sel_shifted,ID_sel,'Marker','.','DisplayName','ID change'); hold on;
 
-datenum_dt=datenum(dt_sel_shifted);
 dcm = datacursormode(gcf);   % get the data cursor mode of the current figure
 set(dcm, 'UpdateFcn', @(src, event_obj) sprintf('%d , %s\navE:%.2f\n%s',src.Cursor.DataIndex,dt_sel_shifted(src.Cursor.DataIndex), event_obj.Position(2),strcat(log_sel(src.Cursor.DataIndex),seq_sel(src.Cursor.DataIndex)) ));
 
