@@ -152,7 +152,9 @@ ENERGY=ENERGY(:,1:numel(dt_sel_shifted));
 
 %% train
 ENERGY(LOGEVENT(1,:)==15) =15.3;   % tweak: when ID is stop seq (15), set the energy to 15.3, the ON-IDLE basline value.
-
+train_idx=numel(ENERGY)-fix(numel(ENERGY)/10);
+ENERGY_train=ENERGY(:,1:train_idx);
+LOGEVENT_train=LOGEVENT(:,1:train_idx);
 NN_training_script()
 
 %% test
@@ -163,6 +165,7 @@ figure, plot(ENERGY,E,'x'); hold on;
 plot(1:100,1:100,'k');
 
 figure, 
+stem(dt_sel_shifted(train_idx),60,'Color','magenta', 'Displayname','start of unseen test data'); hold on;
 plot(dT,KW_raw,'r', 'Displayname','measured Power [kW]'); hold on;
 stairs(dt_sel_shifted,ENERGY,'c', 'Displayname','avg. Power per Event [kW]' ); hold on;
 stairs(dt_sel_shifted,E,'b', 'Displayname','predicted avg. Power [kW]'); hold on;

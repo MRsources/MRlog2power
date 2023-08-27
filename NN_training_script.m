@@ -13,13 +13,13 @@ net.input.processFcns = {'mapminmax'};
 net.output.processFcns = {'mapminmax'};
 
 net.trainParam.max_fail=600;
- 
+net.trainParam.epochs=3000;
 % Split Data for Training, Validation, Testing
 net.divideParam.trainRatio = 70/100;
 net.divideParam.valRatio = 15/100;
 net.divideParam.testRatio = 15/100;
 
-[net,tr] = train(net,LOGEVENT,ENERGY,'useParallel','yes','showResources','yes');
+[net,tr] = train(net,LOGEVENT_train,ENERGY_train,'useParallel','yes','showResources','yes');
 
 % E = net(LOGEVENT(:,3000))
 % E = lay4(LOGEVENT(:,3000))
