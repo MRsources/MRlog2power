@@ -1,13 +1,16 @@
 % Split data
 trainFcn = 'trainlm';  % Levenberg-Marquardt backpropagation.
-% trainFcn = 'trainbr';  % Levenberg-Marquardt backpropagation.
-hiddenLayerSize = [20 20 20];
+trainFcn = 'trainbr';  % Levenberg-Marquardt backpropagation.
+hiddenLayerSize = [10 20 10];
 net = fitnet(hiddenLayerSize, trainFcn);
 % net = feedforwardnet(hiddenSizes,trainFcn)
 
 % Choose Input and Output Pre/Post-Processing Functions
 % net.input.processFcns = {'removeconstantrows','mapminmax'};
 % net.output.processFcns = {'removeconstantrows','mapminmax'};
+
+net.input.processFcns = {'mapminmax'};
+net.output.processFcns = {'mapminmax'};
 
 net.trainParam.max_fail=600;
  
@@ -23,15 +26,4 @@ net.divideParam.testRatio = 15/100;
 
 dt_sel_shifted(3000)
 
-% Performance on test data
-testPerformance = mse(net, y, yPred, tr.testMask);
-disp(['MSE on Test Data: ', num2str(testPerformance)]);
-
-
-figure, hold on
-plot(x, y, 'b')
-plot(x, yPred, 'r--')
-legend('Actual','Predicted')
-title('Feedforward Neural Network Prediction')
-hold off
 
