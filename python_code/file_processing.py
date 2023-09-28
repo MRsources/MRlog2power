@@ -2,18 +2,11 @@ import pandas as pd
 import re
 
 # Load and process data from two files
-column1 = ['Timestamp', 'ID', 'Text']
-df1 = pd.read_csv('D:\\360MoveData\\Users\\DELL\\Desktop\\hiwi_work\\MRI_data\\MR3\\mr3-eventlog-2015-conv.txt', sep='\t', header=None, names=column1, usecols=[0,2,3])
-df1['Timestamp'] = pd.to_datetime(df1['Timestamp'], format='%Y%m%d%H%M%S')
-
-column2 = ['Timestamp', 'Energy']
-df2 = pd.read_csv('D:\\360MoveData\\Users\\DELL\\Desktop\\hiwi_work\\MRI_data\\MR3\\mr3-energy-2015-conv.txt', sep='\t', header=None, names=column2)
-df2['Timestamp'] = pd.to_datetime(df2['Timestamp'], format='%Y%m%d%H%M%S')
-
-merged_df = pd.merge(df1, df2, on='Timestamp', how='left')
-merged_df = merged_df[['Timestamp', 'ID', 'Energy', 'Text']]
-merged_df['Timestamp'] = merged_df['Timestamp'].dt.strftime('%Y%m%d%H%M%S')
-merged_df['Text'] = merged_df['Text'].apply(lambda x: re.sub(r"Protocol: '(.*?)', Sequence: '(.*?)'", r"Protocol: \1, Sequence: \2", str(x)))
+column = ['Timestamp', 'ID', 'Text']
+df = pd.read_csv('D:\\360MoveData\\Users\\DELL\\Desktop\\hiwi_work\\MRI_data\\MR3\\mr3-eventlog-2015-conv.txt', sep='\t', header=None, names=column, usecols=[0,2,3])
+df['Timestamp'] = pd.to_datetime(df['Timestamp'], format='%Y%m%d%H%M%S')
+df['Timestamp'] = df['Timestamp'].dt.strftime('%Y%m%d%H%M%S')
+df['Text'] = df['Text'].apply(lambda x: re.sub(r"Protocol: '(.*?)', Sequence: '(.*?)'", r"Protocol: \1, Sequence: \2", str(x)))
 
 # Filtering the rows based on the text column
 phrases_to_keep = [
@@ -23,8 +16,10 @@ phrases_to_keep = [
     "Measurement finished OK.",
     "The user started and confirmed Host - Shutdown All by EndSession"
 ]
-merged_df = merged_df[merged_df['Text'].apply(lambda x: any(phrase in str(x) for phrase in phrases_to_keep))]
-merged_df.to_csv('mr3_merged.txt', index=False, sep = '\t', header=None)
+df = df[df['Text'].apply(lambda x: any(phrase in str(x) for phrase in phrases_to_keep))]
+sequences_to_remove = ["Sequence: %AdjustSeq%", "Sequence: %CustomerSeq%"]
+df = df[~df['Text'].str.contains('|'.join(sequences_to_remove))]
+df.to_csv('mr3_merged.txt', index=False, sep = '\t', header=None)
 
 # Function to sort "Start measurement" and "Measurement finished OK" lines
 def sort_protocol_sequence(inputlines):
@@ -71,6 +66,7 @@ sorted_lines = [line.replace('\t', ',') for line in sorted_lines]
 
 with open(output_file_path, 'w') as file:
     file.writelines(sorted_lines)
+
 
 
 
