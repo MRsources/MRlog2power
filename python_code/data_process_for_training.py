@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 
 # read selected log data set
-df1 = pd.read_csv('mr3_log_selected.txt',  header=None, usecols=[0, 1, 3,4], names=['t_sel', 'ID_sel', 'log_sel', 'seq_sel'])
+df1 = pd.read_csv('mr3_log_selected.txt',  header=None, usecols=[0, 1, 2,3], names=['t_sel', 'ID_sel', 'log_sel', 'seq_sel'])
 df1['t_sel'] = pd.to_datetime(df1['t_sel'], format='%Y%m%d%H%M%S', errors='coerce')
 df1['pro_sel'] = df1['log_sel'].astype(str).apply(lambda x: re.search(r'Protocol: ([^,]*)', x).group(1) if re.search(r'Protocol: ([^,]*)', x) else None)
 df1['seq_sel'] = df1['seq_sel'].astype(str).apply(lambda x: re.search(r'Sequence: ([^\)]*)', x).group(1) if re.search(r'Sequence: ([^\)]*)', x) else None)
@@ -93,7 +93,7 @@ ENERGY = np.array(ENERGY)
 LOGEVENT.to_csv('LOGEVENT.csv', index=False)
 np.savetxt('ENERGY.csv', ENERGY, delimiter=',')
 
-fig, ax = plt.subplots(figsize=(16, 8))
-ax.plot(dT, KW_raw, drawstyle='steps', linestyle='-', label="original energy", color='blue', picker=True)
-ax.plot(dt_sel_shifted, lookup_E , drawstyle='steps', linestyle='-', label="average energy", color='red', picker=True)
+# fig, ax = plt.subplots(figsize=(16, 8))
+# ax.plot(dT, KW_raw, drawstyle='steps', linestyle='-', label="original energy", color='blue', picker=True)
+# ax.plot(dt_sel_shifted, lookup_E , drawstyle='steps', linestyle='-', label="average energy", color='red', picker=True)
 
