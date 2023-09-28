@@ -26,8 +26,8 @@ duration_scaled = scaler.fit_transform(LOGEVENT[['duration']])
 # Combine processed features
 processed_features = np.concatenate([onehot_encoded, duration_scaled], axis=1)
 train = int(len(processed_features) - len(processed_features) / 10)
-LOGEVENT = processed_features[:train][:20000]
-ENERGY = ENERGY[:train][:20000]
+LOGEVENT = processed_features[:train][:5000]
+ENERGY = ENERGY[:train][:5000]
 
 # Step 1: First split to create a temporary set
 X_temp, X_test, y_temp, y_test = train_test_split(LOGEVENT, ENERGY, test_size=0.15, random_state=42)
