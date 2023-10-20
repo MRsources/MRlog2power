@@ -1,9 +1,10 @@
+totalT=tic;
 %% Import protocol_sequence_energy_1 data from text file
 % filename: protocol_sequence_energy_1.txt
-    opts = delimitedTextImportOptions("NumVariables", 6);
     % Specify range and delimiter
     opts.DataLines = [1, Inf];
     opts.Delimiter = ",";
+    opts = delimitedTextImportOptions("NumVariables", 6);
     % Specify column names and types
     opts.VariableNames = ["t_sel", "ID_sel", "Var3", "Var4", "log_sel", "seq_sel"];
     opts.SelectedVariableNames = ["t_sel", "ID_sel", "log_sel", "seq_sel"];
@@ -157,23 +158,38 @@ ENERGY_train=ENERGY(:,1:train_idx);
 LOGEVENT_train=LOGEVENT(:,1:train_idx);
 NN_training_script()
 
+%% load only test
+if 0
+    
+    
+end
+
 %% test
 
 E = net(LOGEVENT);
-
 figure, plot(ENERGY,E,'x'); hold on;
 plot(1:100,1:100,'k');
 
 figure, 
-stem(dt_sel_shifted(train_idx),60,'Color','magenta', 'Displayname','start of unseen test data'); hold on;
+ax1=subplot(2,1,1),
 plot(dT,KW_raw,'r', 'Displayname','measured Power [kW]'); hold on;
 stairs(dt_sel_shifted,ENERGY,'c', 'Displayname','avg. Power per Event [kW]' ); hold on;
 stairs(dt_sel_shifted,E,'b', 'Displayname','predicted avg. Power [kW]'); hold on;
 
 dcm = datacursormode(gcf);   % get the data cursor mode of the current figure
 set(dcm, 'UpdateFcn', @(src, event_obj) sprintf('%d , %s\navE:%.2f\n%s',src.Cursor.DataIndex,dt_sel_shifted(src.Cursor.DataIndex), event_obj.Position(2),strcat(log_sel(src.Cursor.DataIndex),seq_sel(src.Cursor.DataIndex)) ));
-legend show;
+stem(dt_sel_shifted(train_idx),60,'Color','magenta', 'Displayname','start of unseen test data'); hold on;
+legend show; ylabel('power in kW'); grid on; ylim([0 80])
 
-plot(dt_sel_shifted(2:end),cumsum(ENERGY(2:end)'.*hours([diff(dt_sel_shifted)]))*1e-3,'c.-', 'Displayname','avg. Energy per Event [kWh]' ); hold on;
-plot(dt_sel_shifted(2:end),cumsum(E(2:end)'.*hours([diff(dt_sel_shifted)]))*1e-3,'b.-', 'Displayname','predicted Energy [kWh]'); hold on;
+ax2=subplot(4,1,3),
+plot(dt_sel_shifted(2:end),cumsum(ENERGY(1:end-1)'.*hours([diff(dt_sel_shifted)])),'c.-','Markersize',10, 'Displayname','avg. Energy per Event [kWh]' ); hold on;
+plot(dt_sel_shifted(2:end),cumsum(E(1:end-1)'.*hours([diff(dt_sel_shifted)])),'b.--', 'Displayname','predicted Energy [kWh]'); hold on;
+legend show;  legend('Location','northwest'); ylabel('energy in kWh'); grid on;
+ax3=subplot(4,1,4),
+plot(dt_sel_shifted(2:end),0.4 * cumsum(E(1:end-1)'.*hours([diff(dt_sel_shifted)])),'b.-', 'Displayname','predicted cost [€] assuming (0.4 €/kWh)'); hold on;
+legend show; legend('Location','northwest'); ylabel('cost in €'); grid on;
+linkaxes([ax1, ax2,ax3], 'x');
+
+totalTimeElapsed=toc(totalT)
+toc(totalT)
 
